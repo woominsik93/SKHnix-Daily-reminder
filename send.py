@@ -39,25 +39,35 @@ def get_access_token():
 
 
 def load_items():
+    default_title = "오늘의 산업보안·안전 알림"
     items = {}
     if not os.path.isdir(ITEMS_DIR):
         return items
-    for name in sorted(os.listdir(ITEMS_DIR)):
-        if not name.endswith(".txt") or name.startswith("_"):
+    stems = set()
+    for name in os.listdir(ITEMS_DIR):
+        if name.startswith("_"):
             continue
-        stem = name[:-4]
-        text = open(os.path.join(ITEMS_DIR, name), encoding="utf-8").read().strip()
-        if not text:
-            continue
-        lines = text.splitlines()
-        title = lines[0].strip()
-        body = "\n".join(lines[1:]).strip()
-        image = None
+        base, ext = os.path.splitext(name)
+        if ext == ".txt" or ext in IMG_EXTS:
+            stems.add(base)
+    for stem in sorted(stems):
+        title, body, image = default_title, "", None
+        txt = os.path.join(ITEMS_DIR, stem + ".txt")
+        has_text = False
+        if os.path.exists(txt):
+            text = open(txt, encoding="utf-8").read().strip()
+            if text:
+                lines = text.splitlines()
+                title = lines[0].strip()
+                body = "\n".join(lines[1:]).strip()
+                has_text = True
         for ext in IMG_EXTS:
             p = os.path.join(ITEMS_DIR, stem + ext)
             if os.path.exists(p):
                 image = p
                 break
+        if not image and not has_text:
+            continue
         items[stem] = {"title": title, "body": body, "image": image}
     return items
 
