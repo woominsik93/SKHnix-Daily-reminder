@@ -103,11 +103,11 @@ def upload_image(token, path):
 
 def send(token, item):
     title, body = item["title"], item["body"]
-    url = url.replace("http://", "https://")
-    print("이미지 URL:", url)
-    link = {"web_url": url, "mobile_web_url": url}
+    link = {"web_url": LINK, "mobile_web_url": LINK}
     if item["image"]:
         url, w, h = upload_image(token, item["image"])
+        url = url.replace("http://", "https://")
+        print("이미지 URL:", url)
         link = {"web_url": url, "mobile_web_url": url}
         tpl = {
             "object_type": "feed",
