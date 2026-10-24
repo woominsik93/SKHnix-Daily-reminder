@@ -106,6 +106,7 @@ def send(token, item):
     link = {"web_url": LINK, "mobile_web_url": LINK}
     if item["image"]:
         url, w, h = upload_image(token, item["image"])
+        link = {"web_url": url, "mobile_web_url": url}
         tpl = {
             "object_type": "feed",
             "content": {
